@@ -29,8 +29,7 @@ public class SistemaClientesFx extends Application {
         stage.getIcons().add(icon);
         stage.setScene(escena);
         stage.show();
-
-    }
+        }
     @Override
     public void stop(){
         applicationContext.close();

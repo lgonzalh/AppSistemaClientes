@@ -39,7 +39,16 @@ public class IndexControlador implements Initializable {
     private final ObservableList<Cliente> clienteList =
             FXCollections.observableArrayList();
 
+    @FXML
+    private TextField txtNombre;
 
+    @FXML
+    private TextField txtDomicilio;
+
+    @FXML
+    private TextField txtTelefono;
+
+    private Integer idClienteInterno;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -61,21 +70,74 @@ public class IndexControlador implements Initializable {
         clienteTabla.setItems(clienteList);
     }
 
+    public void agregarCliente () {
+        if (txtNombre.getText().isEmpty()) {
+            mostrarMensaje("Error de Validación", "Debe proporcionar nombre Cliente");
+            txtNombre.requestFocus();
+            return;
+        } else {
+            var cliente = new Cliente();
+            recolectarDatosFormulario(cliente);
+            cliente.setIdCliente(null);
+            clienteServicio.guardarCliente(cliente);
+            mostrarMensaje("Información","Cliente Agregado");
+            limpiarFormulario();
+            listarClientes();
+        }
+    }
 
-/*
+    public void cargarClienteFormulario () {
+        var cliente = clienteTabla.getSelectionModel().getSelectedItem();
+        if (cliente != null) {
+            idClienteInterno = cliente.getIdCliente();
+            txtNombre.setText(cliente.getNombreCliente());
+            txtDomicilio.setText(cliente.getDomicilioCliente());
+            txtTelefono.setText(cliente.getTelefonoCliente());
+        }
+    }
+
     private void recolectarDatosFormulario(Cliente cliente){
-        //-----Parte 2----
         if(idClienteInterno!=null)
             cliente.setIdCliente(idClienteInterno);
-        //------------------------------------Pase a modificar agregarCliente
 
         cliente.setNombreCliente(txtNombre.getText());
         cliente.setDomicilioCliente(txtDomicilio.getText());
         cliente.setTelefonoCliente(txtTelefono.getText());
     }
 
-    private void limpiarFormulario(){
+    public void modificarCliente () {
+        if (idClienteInterno == null) {
+            mostrarMensaje("Información", "Debe seleccionar un registro Cliente");
+            return;
+        }
+        if (txtNombre.getText().isEmpty()) {
+            mostrarMensaje("Error Validación", "Debe ingresar un Cliente");
+            txtNombre.requestFocus();
+            return;
+        }
+        var cliente = new Cliente();
+        recolectarDatosFormulario(cliente);
+        clienteServicio.guardarCliente(cliente);
+        mostrarMensaje("Informacion","Cliente modificado");
+        limpiarFormulario();
+        listarClientes();
+    }
 
+    public void eliminarCliente () {
+        var cliente = clienteTabla.getSelectionModel().getSelectedItem();
+        if (cliente != null) {
+            logger.info("Registro a eliminar: " +cliente.toString());
+            clienteServicio.eliminarCliente(cliente);
+            mostrarMensaje("Información","Cliente Eliminado: " + cliente.getIdCliente());
+            limpiarFormulario();
+            listarClientes();
+        } else {
+            mostrarMensaje("Error","No se ha seleccionado ningún cliente");
+        }
+    }
+
+    public void limpiarFormulario(){
+        idClienteInterno=null;
         txtNombre.clear();
         txtDomicilio.clear();
         txtTelefono.clear();
@@ -88,6 +150,5 @@ public class IndexControlador implements Initializable {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
-*/
 
 }
